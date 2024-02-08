@@ -1,5 +1,45 @@
 import csv
 
+
+def process_api_response(api_response, csv_writer, existing_row_data):
+    """
+    Process the API response, extracting applicationProperties, and write to CSV.
+
+    :param api_response: JSON response from the API as a string.
+    :param csv_writer: CSV writer object to write data to the CSV file.
+    :param existing_row_data: Dictionary containing the existing row data.
+    """
+    # Parse the JSON response
+    response_data = json.loads(api_response)
+
+    # Extract applicationProperties
+    application_properties = response_data.get('applicationProperties', {})
+
+    # Prepare keys and values from the applicationProperties as a single string
+    keys_and_values = "\n".join([f"{key} : {value}" for key, value in application_properties.items()])
+
+    # Update the existing row data with keys and values from the response
+    existing_row_data["keys_and_values_from_response"] = keys_and_values
+
+    # Write the updated row to the CSV
+    csv_writer.writerow(existing_row_data)
+
+# Define the path to your new CSV file
+new_csv_file_path = 'updated_data.csv'
+
+# Define your fieldnames (column headers)
+fieldnames = [
+    "Column1.document-not-in-conjur",
+    "Column1.context",
+    "Column1.api-name",
+    "Column1.document-content-not-matching-with-conjur",
+    "Column1.not-matching-properties",
+    "Column1.matching-document-count",
+    "keys_and_values_from_response"
+]
+
+
+
 def send_post_request(api_name, context):
     url = f"https://abc.com/conf4/api/configuration/{context}"
     credentials = base64.b64encode(b'username:password').decode('utf-8')

@@ -1,6 +1,31 @@
 import csv
 
-
+def send_post_request(api_name, context):
+    url = f"https://abc.com/conf4/api/configuration/{context}"
+    credentials = base64.b64encode(b'username:password').decode('utf-8')
+    headers = f"Authorization: Basic {credentials}"
+    content_type = "Content-Type: application/json"
+    
+    # Example JSON body. Modify this as per your requirement.
+    json_body = json.dumps({
+        "apiName": api_name,
+        "context": context
+    })
+    
+    curl_command = f'curl -X POST "{url}" -H "{headers}" -H "{content_type}" -d \'{json_body}\''
+    
+    try:
+        # Use shlex.split to handle the curl command properly
+        process = subprocess.Popen(shlex.split(curl_command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error = process.communicate()
+        
+        if process.returncode == 0:
+            return "Success", output.decode('utf-8')
+        else:
+            return "Error", error.decode('utf-8')
+    except Exception as e:
+        return "Exception", str(e)
+        
 def print_column_values(csv_file_path):
     # Open the CSV file
     with open(csv_file_path, mode='r', encoding='utf-8') as file:
